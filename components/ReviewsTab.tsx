@@ -1,10 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, FlatList } from 'react-native';
+import { View, Text, StyleSheet, Image, FlatList, Pressable } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 const sampleReviews = [
   {
     id: '1',
+    userId: 'user-1',
     user: 'John Doe',
     rating: 4,
     comment: 'Amazing coffee and cozy atmosphere! Not too loud either.',
@@ -12,21 +14,24 @@ const sampleReviews = [
   },
   {
     id: '2',
-    user: 'Jane Doe',
+    userId: 'user-2',
+    user: 'Jane Smith',
     rating: 5,
     comment: 'Great place to work, love the outlet availability!',
     avatar: 'https://randomuser.me/api/portraits/women/27.jpg',
   },
   {
     id: '3',
-    user: 'Jane Doe',
+    userId: 'user-2',
+    user: 'Jane Smith',
     rating: 4,
     comment: 'Friendly staff and delicious pastries!',
-    avatar: 'https://randomuser.me/api/portraits/women/62.jpg',
+    avatar: 'https://randomuser.me/api/portraits/women/27.jpg',
   },
 ];
 
 export default function ReviewsTab() {
+  const router = useRouter();
   const overallRating = 4.8;
   const totalReviews = 526;
 
@@ -48,10 +53,14 @@ export default function ReviewsTab() {
 
   const renderReview = ({ item }: any) => (
     <View style={styles.reviewCard}>
-      <Image source={{ uri: item.avatar }} style={styles.avatar} />
+      <Pressable onPress={() => router.push(`/user/${item.userId}`)}>
+        <Image source={{ uri: item.avatar }} style={styles.avatar} />
+      </Pressable>
       <View style={{ flex: 1 }}>
         <View style={styles.reviewHeader}>
-          <Text style={styles.userName}>{item.user}</Text>
+          <Pressable onPress={() => router.push(`/user/${item.userId}`)}>
+            <Text style={styles.userName}>{item.user}</Text>
+          </Pressable>
           {renderStars(item.rating)}
         </View>
         <Text style={styles.comment}>{item.comment}</Text>

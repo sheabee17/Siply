@@ -16,6 +16,22 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npx expo start
    ```
 
+3. Start the backend
+
+   ```bash
+   npm run backend-dev
+   ```
+
+4. Manage the database
+
+   ```bash
+   npx prisma generate # Creates the JS Prisma Client
+   npx prisma migrate dev # Git commit
+   npx prisma migrate deploy # Git push
+   npx prisma db seed # Add fake/mock data to the db
+   npx prisma studio # UI to verify
+   ```
+
 In the output, you'll find options to open the app in a
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)

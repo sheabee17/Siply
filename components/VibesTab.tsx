@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Image,
-  ScrollView,
-  Text,
-  StyleSheet,
-  FlatList,
-} from 'react-native';
+import { View, Image, ScrollView, Text, StyleSheet, Dimensions } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
 export default function VibesTab() {
@@ -27,72 +20,50 @@ export default function VibesTab() {
   ];
 
   return (
-    <View style={styles.container}>
-
-      {/* IMAGE CAROUSEL */}
+    <View style={{ padding: 16, backgroundColor: 'white' }}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {images.map((uri, index) => (
-          <Image key={index} source={{ uri }} style={styles.image} />
+          <Image
+            key={index}
+            source={{ uri }}
+            style={{ width: 300, height: 180, marginRight: 10, borderRadius: 8, resizeMode: 'cover' }}
+          />
         ))}
       </ScrollView>
-
-      {/* GRID (FIXED) */}
-      <FlatList
-        data={tags}
-        numColumns={2}
-        keyExtractor={(item) => item.label}
-        columnWrapperStyle={styles.row}
-        renderItem={({ item }) => (
-          <View style={styles.featureCard}>
+      <View style={styles.grid}>
+        {tags.map(tag => (
+          <View key={tag.label} style={styles.featureCard}>
             <View style={styles.iconContainer}>
-              <MaterialIcons
-                name={item.icon as any}
-                size={20}
-                color="#6F4E37"
-              />
+              <MaterialIcons name={tag.icon as any} size={20} color="#6F4E37" />
             </View>
-
-            <Text style={styles.featureText}>{item.label}</Text>
+            <Text style={styles.featureText}>{tag.label}</Text>
           </View>
-        )}
-      />
-
+        ))}
+      </View>
     </View>
   );
 }
 
+const { width } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    backgroundColor: 'white',
-  },
-
-  image: {
-    width: 300,
-    height: 180,
-    marginRight: 10,
-    borderRadius: 8,
-    resizeMode: 'cover',
-  },
-
-  /* ROW spacing between columns */
-  row: {
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 10,
     justifyContent: 'space-between',
-    marginBottom: 8,
   },
-
   featureCard: {
-    flex: 1,
+    width: (width - 60) / 2,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#F6F6F6',
-    paddingVertical: 8,
+    paddingVertical: 6,
     paddingHorizontal: 12,
-    marginHorizontal: 4,
+    marginBottom: 8,
     borderRadius: 8,
     elevation: 2,
   },
-
   iconContainer: {
     width: 28,
     height: 28,
@@ -107,7 +78,6 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 3,
   },
-
   featureText: {
     fontSize: 12,
     fontFamily: 'Afacad',

@@ -36,7 +36,7 @@ function ReviewCard({ review }: { review: UserReview }) {
   return (
     <Pressable
       style={styles.card}
-      onPress={() => router.push(`/cafe?id=${review.cafeId}`)}
+      onPress={() => router.push(`/cafe/${review.cafeSlug}`)}
     >
       <Image source={{ uri: review.cafeImage }} style={styles.image} />
       <View style={styles.content}>

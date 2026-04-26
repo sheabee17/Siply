@@ -1,18 +1,6 @@
-/**
- * UserProfile — unified user details page body.
- *
- * Works for both "viewing your own profile" and "viewing someone else's".
- * Conditional UI:
- *   - If `userId` matches the current logged-in user: show Edit Profile + Share.
- *   - Otherwise: show Follow + Share.
- *
- * Reuses the existing ProfileHeader and ProfileStats components so this
- * page stays visually consistent with the rest of the app.
- */
-
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 
 import ProfileHeader from './ProfileHeader';
 import ProfileStats from './ProfileStats';
@@ -26,11 +14,17 @@ type UserProfileProps = {
 
 export default function UserProfile({ userId }: UserProfileProps) {
   const router = useRouter();
-  const { user, loading, error } = useUser(userId);
+  const { user, loading, error, refresh } = useUser(userId);
   const { currentUserId } = useCurrentUser();
   const [isFollowing, setIsFollowing] = useState(false);
 
   const isOwnProfile = currentUserId === userId;
+
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+    }, [refresh])
+  );
 
   if (loading) {
     return (
@@ -50,21 +44,32 @@ export default function UserProfile({ userId }: UserProfileProps) {
     );
   }
 
+  const reviews = user.reviews.map((r) => ({
+    id: r.id,
+    cafeId: r.cafe.id,
+    cafeSlug: r.cafe.slug,
+    cafeName: r.cafe.name,
+    cafeImage: r.cafe.images?.[0]?.url ?? '',
+    rating: r.rating,
+    reviewText: r.comment,
+    createdAt: '',
+  }));
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <ProfileHeader
-        fullName={`${user.firstName} ${user.lastName}`}
-        bio={user.bio}
-        location={user.location}
-        activeSince={user.activeSince}
-        avatar={user.avatar}
+        fullName={user.name}
+        bio={user.bio ?? ''}
+        location={user.location ?? ''}
+        activeSince={''}
+        avatar={user.avatar ?? 'https://randomuser.me/api/portraits/lego/1.jpg'}
         onPressSettings={isOwnProfile ? () => router.push('/modal') : undefined}
       />
 
       <ProfileStats
-        followers={user.followers}
-        following={user.following}
-        dayStreak={user.dayStreak}
+        followers={0}
+        following={0}
+        dayStreak={0}
       />
 
       <View style={styles.buttonRow}>
@@ -86,12 +91,7 @@ export default function UserProfile({ userId }: UserProfileProps) {
               style={[styles.primaryButton, isFollowing && styles.secondaryButton]}
               onPress={() => setIsFollowing((f) => !f)}
             >
-              <Text
-                style={[
-                  styles.primaryButtonText,
-                  isFollowing && styles.secondaryButtonText,
-                ]}
-              >
+              <Text style={[styles.primaryButtonText, isFollowing && styles.secondaryButtonText]}>
                 {isFollowing ? 'Following' : 'Follow'}
               </Text>
             </Pressable>
@@ -102,57 +102,18 @@ export default function UserProfile({ userId }: UserProfileProps) {
         )}
       </View>
 
-      <UserReviewsSection reviews={user.reviews} />
+      <UserReviewsSection reviews={reviews} />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    paddingBottom: 40,
-    backgroundColor: '#fff',
-  },
-  centered: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  errorText: {
-    fontSize: 16,
-    color: '#A04040',
-    textAlign: 'center',
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    gap: 10,
-    marginTop: 6,
-    marginBottom: 24,
-  },
-  primaryButton: {
-    flex: 1,
-    backgroundColor: '#B8AAA0',
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  primaryButtonText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 15,
-  },
-  secondaryButton: {
-    flex: 1,
-    backgroundColor: '#EDE7E1',
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  secondaryButtonText: {
-    color: '#5A4B40',
-    fontWeight: '600',
-    fontSize: 15,
-  },
+  container: { padding: 20, paddingBottom: 40, backgroundColor: '#fff' },
+  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 20, backgroundColor: '#fff' },
+  errorText: { fontSize: 16, color: '#A04040', textAlign: 'center' },
+  buttonRow: { flexDirection: 'row', gap: 10, marginTop: 6, marginBottom: 24 },
+  primaryButton: { flex: 1, backgroundColor: '#B8AAA0', paddingVertical: 14, borderRadius: 12, alignItems: 'center' },
+  primaryButtonText: { color: '#fff', fontWeight: '600', fontSize: 15 },
+  secondaryButton: { flex: 1, backgroundColor: '#EDE7E1', paddingVertical: 14, borderRadius: 12, alignItems: 'center' },
+  secondaryButtonText: { color: '#5A4B40', fontWeight: '600', fontSize: 15 },
 });

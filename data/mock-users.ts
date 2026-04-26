@@ -1,19 +1,12 @@
-/**
- * Mock user data for development.
- *
- * Replace this with real API calls (via hooks/use-user.ts) once the backend
- * is wired up. Keep the `User` and `UserReview` types — they define the
- * shape the UI components expect.
- */
-
 export type UserReview = {
   id: string;
   cafeId: string;
+  cafeSlug: string;
   cafeName: string;
   cafeImage: string;
-  rating: number; // 1-5
+  rating: number;
   reviewText: string;
-  createdAt: string; // ISO date
+  createdAt: string;
 };
 
 export type User = {
@@ -46,6 +39,7 @@ export const mockUsers: Record<string, User> = {
       {
         id: 'r1',
         cafeId: 'cafe-1',
+        cafeSlug: 'The-Daily-Grind',
         cafeName: 'The Daily Grind',
         cafeImage: 'https://s.hdnux.com/photos/01/34/02/76/24129409/5/rawImage.jpg',
         rating: 4,
@@ -55,11 +49,11 @@ export const mockUsers: Record<string, User> = {
       {
         id: 'r2',
         cafeId: 'cafe-2',
+        cafeSlug: 'Brew-and-Co',
         cafeName: 'The Bean Bar',
         cafeImage: 'https://s.hdnux.com/photos/01/34/10/33/24151789/3/rawImage.jpg',
         rating: 5,
-        reviewText:
-          'Absolutely loved this café. The coffee was rich and flavorful, and the space was bright and inviting.',
+        reviewText: 'Absolutely loved this café. The coffee was rich and flavorful, and the space was bright and inviting.',
         createdAt: '2025-02-02T14:30:00Z',
       },
     ],
@@ -79,6 +73,7 @@ export const mockUsers: Record<string, User> = {
       {
         id: 'r3',
         cafeId: 'cafe-1',
+        cafeSlug: 'The-Daily-Grind',
         cafeName: 'The Daily Grind',
         cafeImage: 'https://s.hdnux.com/photos/01/34/02/76/24129409/5/rawImage.jpg',
         rating: 5,
@@ -88,6 +83,7 @@ export const mockUsers: Record<string, User> = {
       {
         id: 'r4',
         cafeId: 'cafe-1',
+        cafeSlug: 'The-Daily-Grind',
         cafeName: 'The Daily Grind',
         cafeImage: 'https://s.hdnux.com/photos/01/34/02/76/24129409/5/rawImage.jpg',
         rating: 4,

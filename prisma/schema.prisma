@@ -14,10 +14,12 @@ model User {
   email     String   @unique
   age       Int?
   password  String
+  bio       String?
+  location  String?
+  avatar    String?
 
   reviews   Review[]
 }
-
 /* CAFES */
 model Cafe {
   id          String   @id @default(uuid())

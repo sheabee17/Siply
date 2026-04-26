@@ -1,35 +1,48 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  FlatList,
-  Pressable,
-} from 'react-native';
+import { View, Text, StyleSheet, Image, FlatList, Pressable } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
 type Review = {
   id: string;
+  userId: string;
+  user: string;
   rating: number;
   comment: string;
-  user: {
-    id: string;
-    name: string;
-    avatar?: string; // optional (since your DB doesn't have it yet)
-  };
+  avatar: string;
 };
 
-export default function ReviewsTab({ reviews }: any){
+const sampleReviews = [
+  {
+    id: '1',
+    userId: 'user-1',
+    user: 'John Doe',
+    rating: 4,
+    comment: 'Amazing coffee and cozy atmosphere! Not too loud either.',
+    avatar: 'https://randomuser.me/api/portraits/men/68.jpg',
+  },
+  {
+    id: '2',
+    userId: 'user-2',
+    user: 'Jane Smith',
+    rating: 5,
+    comment: 'Great place to work, love the outlet availability!',
+    avatar: 'https://randomuser.me/api/portraits/women/27.jpg',
+  },
+  {
+    id: '3',
+    userId: 'user-2',
+    user: 'Jane Smith',
+    rating: 4,
+    comment: 'Friendly staff and delicious pastries!',
+    avatar: 'https://randomuser.me/api/portraits/women/27.jpg',
+  },
+];
+
+export default function ReviewsTab() {
   const router = useRouter();
-  const overallRating =
-    reviews.length > 0
-      ? (
-          reviews.reduce((sum: number, r: Review) => sum + r.rating, 0) /
-          reviews.length
-        ).toFixed(1)
-      : '0.0';
+  const overallRating = 4.8;
+  const totalReviews = 526;
 
   const renderStars = (rating: number) => {
     const stars = [];
@@ -49,23 +62,14 @@ export default function ReviewsTab({ reviews }: any){
 
   const renderReview = ({ item }: { item: Review }) => (
     <View style={styles.reviewCard}>
-      <Pressable onPress={() => router.push(`/user/${item.user.id}`)}>
-        <Image
-          source={{
-            uri:
-              item.user.avatar ||
-              'https://randomuser.me/api/portraits/men/1.jpg',
-          }}
-          style={styles.avatar}
-        />
+      <Pressable onPress={() => router.push(`/user/${item.userId}`)}>
+        <Image source={{ uri: item.avatar }} style={styles.avatar} />
       </Pressable>
-
       <View style={{ flex: 1 }}>
         <View style={styles.reviewHeader}>
-          <Pressable onPress={() => router.push(`/user/${item.user.id}`)}>
-            <Text style={styles.userName}>{item.user.name}</Text>
+          <Pressable onPress={() => router.push(`/user/${item.userId}`)}>
+            <Text style={styles.userName}>{item.user}</Text>
           </Pressable>
-
           {renderStars(item.rating)}
         </View>
 
@@ -80,13 +84,13 @@ export default function ReviewsTab({ reviews }: any){
       <View style={styles.overallCard}>
         {renderStars(Math.round(Number(overallRating)))}
         <Text style={styles.totalReviews}>
-          ({reviews.length} reviews)
+          ({sampleReviews.length} reviews)
         </Text>
       </View>
 
       {/* REVIEWS LIST */}
       <FlatList
-        data={reviews}
+        data={sampleReviews}
         keyExtractor={(item) => item.id}
         renderItem={renderReview}
         contentContainerStyle={{ paddingTop: 12 }}

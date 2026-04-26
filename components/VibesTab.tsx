@@ -1,61 +1,53 @@
 import React from 'react';
-import {
-  View,
-  Image,
-  ScrollView,
-  Text,
-  StyleSheet,
-  FlatList,
-} from 'react-native';
+import { View, Image, ScrollView, Text, StyleSheet, FlatList } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
-export default function VibesTab() {
-  const images = [
-    'https://s.hdnux.com/photos/01/34/02/75/24129403/5/rawImage.jpg',
-    'https://s.hdnux.com/photos/01/34/02/76/24129409/5/rawImage.jpg',
-    'https://s.hdnux.com/photos/01/34/10/33/24151789/3/rawImage.jpg',
-    'https://tb-static.uber.com/prod/image-proc/processed_images/e7c5333ea109c7ad1238fd86292ae93e/c9252e6c6cd289c588c3381bc77b1dfc.jpeg',
-  ];
 
-  const tags = [
-    { label: 'VARIETY OF SEATING', icon: 'chair' },
-    { label: 'NATURAL/DIM LIGHTING', icon: 'light' },
-    { label: 'POWER OUTLETS', icon: 'outlet' },
-    { label: 'MEALS + DRINKS', icon: 'restaurant' },
-    { label: 'STUDENT DISCOUNTS', icon: 'assignment-ind' },
-    { label: 'NUTRITION FOCUSED', icon: 'spa' },
-  ];
+const VIBE_ICONS: Record<string, string> = {
+  'VARIETY OF SEATING': 'chair',
+  'NATURAL/DIM LIGHTING': 'light-mode',
+  'POWER OUTLETS': 'outlet',
+  'MEALS + DRINKS': 'restaurant',
+  'STUDENT DISCOUNTS': 'assignment-ind',
+  'NUTRITION FOCUSED': 'spa',
+};
 
+export default function VibesTab({ cafe }: any) {
   return (
     <View style={styles.container}>
 
       {/* IMAGE CAROUSEL */}
+    {cafe.images?.length > 0 && (
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {images.map((uri, index) => (
-          <Image key={index} source={{ uri }} style={styles.image} />
+        {cafe.images.map((item: any, index: number) => (
+          <Image key={index} source={{ uri: item.url }} style={styles.image} />
         ))}
       </ScrollView>
+    )}
 
-      {/* GRID (FIXED) */}
-      <FlatList
-        data={tags}
-        numColumns={2}
-        keyExtractor={(item) => item.label}
-        columnWrapperStyle={styles.row}
-        renderItem={({ item }) => (
-          <View style={styles.featureCard}>
-            <View style={styles.iconContainer}>
-              <MaterialIcons
-                name={item.icon as any}
-                size={20}
-                color="#6F4E37"
-              />
+      {/* VIBES GRID */}
+      {cafe.vibes?.length > 0 && (
+        <FlatList
+          data={cafe.vibes}
+          numColumns={2}
+          keyExtractor={(item: any) => item.id}
+          columnWrapperStyle={styles.row}
+          scrollEnabled={false}
+          style={{ marginTop: 16 }}
+          renderItem={({ item }: any) => (
+            <View style={styles.featureCard}>
+              <View style={styles.iconContainer}>
+                <MaterialIcons
+                  name={item.icon as any}
+                  size={20}
+                  color="#6F4E37"
+                />
+              </View>
+              <Text style={styles.featureText}>{item.label}</Text>
             </View>
-
-            <Text style={styles.featureText}>{item.label}</Text>
-          </View>
-        )}
-      />
+          )}
+        />
+      )}
 
     </View>
   );

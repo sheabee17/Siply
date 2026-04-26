@@ -3,6 +3,15 @@ import { View, Text, StyleSheet, Image, FlatList, Pressable } from 'react-native
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
+type Review = {
+  id: string;
+  userId: string;
+  user: string;
+  rating: number;
+  comment: string;
+  avatar: string;
+};
+
 const sampleReviews = [
   {
     id: '1',
@@ -51,7 +60,7 @@ export default function ReviewsTab() {
     return <View style={{ flexDirection: 'row' }}>{stars}</View>;
   };
 
-  const renderReview = ({ item }: any) => (
+  const renderReview = ({ item }: { item: Review }) => (
     <View style={styles.reviewCard}>
       <Pressable onPress={() => router.push(`/user/${item.userId}`)}>
         <Image source={{ uri: item.avatar }} style={styles.avatar} />
@@ -63,6 +72,7 @@ export default function ReviewsTab() {
           </Pressable>
           {renderStars(item.rating)}
         </View>
+
         <Text style={styles.comment}>{item.comment}</Text>
       </View>
     </View>
@@ -70,10 +80,15 @@ export default function ReviewsTab() {
 
   return (
     <View style={styles.container}>
+      {/* OVERALL RATING */}
       <View style={styles.overallCard}>
-      {renderStars(Math.round(overallRating))}
-      <Text style={styles.totalReviews}>({totalReviews} reviews)</Text>
-    </View>
+        {renderStars(Math.round(Number(overallRating)))}
+        <Text style={styles.totalReviews}>
+          ({sampleReviews.length} reviews)
+        </Text>
+      </View>
+
+      {/* REVIEWS LIST */}
       <FlatList
         data={sampleReviews}
         keyExtractor={(item) => item.id}
@@ -96,13 +111,7 @@ const styles = StyleSheet.create({
     elevation: 2,
     alignSelf: 'center',
   },
-  overallRating: {
-    fontSize: 20,
-    fontFamily: 'Afacad',
-    fontWeight: 'bold',
-    marginBottom: 6,
-    color: '#434342',
-  },
+
   totalReviews: {
     fontSize: 12,
     color: '#616161',
@@ -118,23 +127,27 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     elevation: 2,
   },
+
   avatar: {
     width: 40,
     height: 40,
     borderRadius: 20,
     marginRight: 12,
   },
+
   reviewHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+
   userName: {
     fontSize: 14,
     fontFamily: 'Afacad',
     fontWeight: 'bold',
     color: '#434342',
   },
+
   comment: {
     marginTop: 4,
     fontSize: 12,

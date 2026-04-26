@@ -1,25 +1,41 @@
-/**
- * useUser — fetch a user by id.
- *
- * Currently returns mock data synchronously. When the backend is ready,
- * swap the inside of this hook for a fetch/react-query call. The shape
- * of the returned object ({ user, loading, error }) stays the same so
- * no UI components need to change.
- */
+import { useEffect, useState, useCallback } from 'react';
 
-import { useEffect, useState } from 'react';
-import { mockUsers, type User } from '../data/mock-users';
+const API_URL = 'http://localhost:3001';
+
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  bio?: string;
+  location?: string;
+  avatar?: string;
+  reviews: {
+    id: string;
+    rating: number;
+    comment: string;
+    cafe: {
+      id: string;
+      name: string;
+      slug: string;
+      images: { url: string }[];
+    };
+  }[];
+};
 
 type UseUserResult = {
   user: User | null;
   loading: boolean;
   error: Error | null;
+  refresh: () => void;
 };
 
 export function useUser(userId: string | undefined): UseUserResult {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [tick, setTick] = useState(0);
+
+  const refresh = useCallback(() => setTick((t) => t + 1), []);
 
   useEffect(() => {
     if (!userId) {
@@ -27,37 +43,31 @@ export function useUser(userId: string | undefined): UseUserResult {
       setLoading(false);
       return;
     }
-
     setLoading(true);
     setError(null);
 
-    // --- MOCK IMPLEMENTATION ---
-    // Simulate a short async delay so the loading state is testable.
-    const timer = setTimeout(() => {
-      const found = mockUsers[userId];
-      if (found) {
-        setUser(found);
-      } else {
-        setError(new Error(`User not found: ${userId}`));
-        setUser(null);
-      }
-      setLoading(false);
-    }, 150);
+    fetch(`${API_URL}/api/users/${userId}`)
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then((data: User) => setUser(data))
+      .catch((err) => setError(err))
+      .finally(() => setLoading(false));
+  }, [userId, tick]);
 
-    return () => clearTimeout(timer);
+  return { user, loading, error, refresh };
+}
 
-    // --- REAL BACKEND IMPLEMENTATION (example) ---
-    // Replace the block above with something like:
-    //
-    // fetch(`${API_URL}/users/${userId}`)
-    //   .then((r) => {
-    //     if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    //     return r.json();
-    //   })
-    //   .then((data: User) => setUser(data))
-    //   .catch((err) => setError(err))
-    //   .finally(() => setLoading(false));
-  }, [userId]);
-
-  return { user, loading, error };
+export async function updateUser(
+  userId: string,
+  fields: { name?: string; bio?: string; location?: string }
+): Promise<User> {
+  const r = await fetch(`${API_URL}/api/users/${userId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(fields),
+  });
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
 }

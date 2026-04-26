@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+/* USERS */
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  age       Int?
+  password  String
+
+  reviews   Review[]
+}
+
+/* CAFES */
+model Cafe {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  rating      Float
+  description String
+
+  address     String?
+  crossStreet String?
+  openHours   String?
+
+  wifiSpeed   String?
+  powerOutlets String?
+  noiseLevel  String?
+
+  reviews     Review[]
+  tags        Tag[]
+  amenities   Amenity[]
+  vibes       Vibe[]
+  images      CafeImage[]
+
+  @@index([slug])
+}
+
+/* REVIEWS */
+model Review {
+  id      String @id @default(uuid())
+  rating  Int
+  comment String
+
+  userId  String
+  cafeId  String
+
+  user    User @relation(fields: [userId], references: [id])
+  cafe    Cafe @relation(fields: [cafeId], references: [id])
+}
+
+/* TAGS */
+model Tag {
+  id     String @id @default(uuid())
+  label  String
+
+  cafeId String
+  cafe   Cafe @relation(fields: [cafeId], references: [id])
+}
+
+/* AMENITIES */
+model Amenity {
+  id     String @id @default(uuid())
+  label  String
+
+  cafeId String
+  cafe   Cafe @relation(fields: [cafeId], references: [id])
+}
+
+/* VIBES */
+model Vibe {
+  id     String @id @default(uuid())
+  label  String
+  icon   String @default("local-cafe")
+
+  cafeId String
+  cafe   Cafe @relation(fields: [cafeId], references: [id])
+}
+
+/* IMAGES */
+model CafeImage {
+  id     String @id @default(uuid())
+  url    String
+
+  cafeId String
+  cafe   Cafe @relation(fields: [cafeId], references: [id])
+}

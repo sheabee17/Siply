@@ -1,81 +1,66 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  ScrollView,
-} from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import * as Font from 'expo-font';
 
-export default function OverviewTab() {
-  const [fontsLoaded, setFontsLoaded] = useState(false);
+export default function OverviewTab({ cafe }: any) {
+  // Parse open/closed status from openHours string (e.g. "07:00 - 19:00")
+  const getHoursStatus = (openHours: string) => {
+    if (!openHours) return null;
+    const now = new Date();
+    const [openStr, closeStr] = openHours.split(' - ');
+    const [openH, openM] = openStr.split(':').map(Number);
+    const [closeH, closeM] = closeStr.split(':').map(Number);
+    const openMins = openH * 60 + openM;
+    const closeMins = closeH * 60 + closeM;
+    const nowMins = now.getHours() * 60 + now.getMinutes();
+    const isOpen = nowMins >= openMins && nowMins < closeMins;
+    const hoursLeft = Math.round((closeMins - nowMins) / 60);
+    return { isOpen, hoursLeft };
+  };
 
-  useEffect(() => {
-    const loadFonts = async () => {
-      await Font.loadAsync({
-        Afacad: require('../assets/fonts/Afacad.ttf'),
-        SourceSans3: require('../assets/fonts/SourceSans3.ttf'),
-      });
-      setFontsLoaded(true);
-    };
-    loadFonts();
-  }, []);
-
-  if (!fontsLoaded) return null;
-
-  const features = [
-    'WALKING DISTANCE',
-    'SPECIALTY DRINKS',
-    'POWER OUTLETS',
-    'WHEELCHAIR ACCESS',
-    'BATHROOM AVAILABILITY',
-    'ALLERGEN FRIENDLY',
-  ];
-
-  const tags = ['#cozy', '#natural'];
+  const hoursStatus = getHoursStatus(cafe.openHours);
 
   return (
     <View style={styles.container}>
 
       {/* ABOUT */}
       <Text style={styles.title}>ABOUT THE SPACE</Text>
-
-      <Text style={styles.overviewText}>
-        A cozy, modern neighborhood coffee shop with warm lighting, natural wood accents,
-        and plenty of greenery. The atmosphere is calm and welcoming, with soft background music.
-        Free high-speed Wi-Fi (around 120-170 Mbps) is reliable even during busy hours.
-      </Text>
+      <Text style={styles.overviewText}>{cafe.description}</Text>
 
       {/* TAGS */}
-      <View style={styles.tagContainer}>
-        {tags.map(tag => (
-          <View key={tag} style={styles.tag}>
-            <Text style={styles.tagText}>{tag}</Text>
-          </View>
-        ))}
-      </View>
+      {cafe.tags?.length > 0 && (
+        <View style={styles.tagContainer}>
+          {cafe.tags.map((t: any) => (
+            <View key={t.id} style={styles.tag}>
+              <Text style={styles.tagText}>{t.label}</Text>
+            </View>
+          ))}
+        </View>
+      )}
 
       {/* AMENITIES */}
-      <Text style={styles.title}>AMENITIES & PERKS</Text>
+      {cafe.amenities?.length > 0 && (
+        <>
+          <Text style={styles.title}>AMENITIES & PERKS</Text>
+          <FlatList
+            data={cafe.amenities}
+            numColumns={2}
+            keyExtractor={(item: any) => item.id}
+            columnWrapperStyle={styles.row}
+            scrollEnabled={false}
+            renderItem={({ item }: any) => (
+              <View style={styles.featureCard}>
+                <View style={styles.iconContainer}>
+                  <Ionicons name="sparkles-outline" size={20} color="#6F4E37" />
+                </View>
+                <Text style={styles.featureText}>{item.label}</Text>
+              </View>
+            )}
+          />
+        </>
+      )}
 
-      <FlatList
-        data={features}
-        numColumns={2}
-        keyExtractor={(item) => item}
-        columnWrapperStyle={styles.row}
-        renderItem={({ item }) => (
-          <View style={styles.featureCard}>
-            <View style={styles.iconContainer}>
-              <Ionicons name="sparkles-outline" size={20} color="#6F4E37" />
-            </View>
-            <Text style={styles.featureText}>{item}</Text>
-          </View>
-        )}
-      />
-
-      {/* LOCATION */}
+      {/* LOCATION & HOURS */}
       <Text style={styles.title}>LOCATION & HOURS</Text>
 
       <View style={styles.infoRow}>
@@ -83,20 +68,30 @@ export default function OverviewTab() {
           <Ionicons name="location-outline" size={18} color="#6F4E37" />
         </View>
         <View>
-          <Text style={styles.overviewText1}>123 Brew St, Downtown</Text>
-          <Text style={styles.overviewText2}>Cross-street: Broadway & 4th</Text>
+          <Text style={styles.overviewText1}>{cafe.address}</Text>
+          {cafe.crossStreet ? (
+            <Text style={styles.overviewText2}>Cross-street: {cafe.crossStreet}</Text>
+          ) : null}
         </View>
       </View>
 
-      <View style={styles.infoRow}>
-        <View style={styles.iconContainerSmall}>
-          <Ionicons name="time-outline" size={18} color="#6F4E37" />
+      {cafe.openHours && (
+        <View style={styles.infoRow}>
+          <View style={styles.iconContainerSmall}>
+            <Ionicons name="time-outline" size={18} color="#6F4E37" />
+          </View>
+          <View>
+            <Text style={styles.overviewText1}>Today: {cafe.openHours}</Text>
+            {hoursStatus && (
+              <Text style={styles.overviewText3}>
+                {hoursStatus.isOpen
+                  ? `Open Now • Closes in ${hoursStatus.hoursLeft} hours`
+                  : 'Closed Now'}
+              </Text>
+            )}
+          </View>
         </View>
-        <View>
-          <Text style={styles.overviewText1}>Today: 07:00 - 19:00</Text>
-          <Text style={styles.overviewText3}>Open Now • Closes in 9 hours</Text>
-        </View>
-      </View>
+      )}
 
     </View>
   );
@@ -145,7 +140,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  /* ===== GRID FIX ===== */
   row: {
     justifyContent: 'space-between',
     marginBottom: 8,
@@ -183,7 +177,6 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
 
-  /* LOCATION */
   infoRow: {
     flexDirection: 'row',
     marginTop: 6,

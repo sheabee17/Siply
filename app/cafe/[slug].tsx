@@ -1,44 +1,80 @@
-import React, { useState } from 'react';
-import {View, Text, Image, StyleSheet, TouchableOpacity,} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import { Feather, FontAwesome } from '@expo/vector-icons';
-import OverviewTab from '../components/OverviewTab';
-import ReviewsTab from '../components/ReviewsTab';
-import VibesTab from '../components/VibesTab';
+import { useLocalSearchParams } from 'expo-router';
+
+import OverviewTab from '../../components/OverviewTab';
+import ReviewsTab from '../../components/ReviewsTab';
+import VibesTab from '../../components/VibesTab';
 
 export default function CoffeeProfileScreen() {
+  const { slug } = useLocalSearchParams();
+
   const [activeTab, setActiveTab] = useState<'Overview' | 'Reviews' | 'Vibes'>(
     'Overview'
   );
 
+  const [cafe, setCafe] = useState<any>(null);
+
+  useEffect(() => {
+    if (!slug) return;
+
+    fetch(`http://10.100.147.120:3001/api/cafes/${slug}`)
+      .then((res) => res.json())
+      .then(setCafe)
+      .catch(console.error);
+  }, [slug]);
+
+  if (!cafe) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ padding: 20 }}>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
+      {/* HEADER */}
       <View style={styles.header}>
         <Image
-          source={require('../assets/images/map1.png')}
+          source={require('../../assets/images/map1.png')}
           style={styles.map}
         />
+
         <View style={styles.favoriteButton}>
           <Feather name="star" size={30} color="#6F4E37" />
         </View>
+
         <View style={styles.overlay}>
-          <Text style={styles.title}>The Daily Grind</Text>
+          <Text style={styles.title}>{cafe.name}</Text>
           <View style={styles.metaRow}>
             <FontAwesome name="star" size={14} color="#FFD700" />
-            <Text style={styles.boldText}>4.8</Text>
-            <Text style={styles.metaText}>(526 reviews)</Text>
+            <Text style={styles.boldText}>{cafe.rating}</Text>
+            <Text style={styles.metaText}>
+              ({cafe.reviews?.length || 0} reviews)
+            </Text>
             <Text style={styles.metaText}> · $$ · </Text>
             <Feather name="map-pin" size={14} color="#595959" />
-            <Text style={styles.metaText}>0.4 mi</Text>
+            <Text style={styles.metaText}> · </Text>
           </View>
         </View>
       </View>
 
+      {/* STATS */}
       <View style={styles.statsRow}>
-        <Stat icon="wifi" label="WIFI" value="143 Mbps" />
-        <Stat icon="battery-charging" label="POWER" value="Many" />
-        <Stat icon="volume-x" label="NOISE" value="Quiet" />
+        <Stat icon="wifi" label="WIFI" value={cafe.wifiSpeed || "N/A"} />
+        <Stat icon="battery-charging" label="POWER" value={cafe.powerOutlets || "N/A"} />
+        <Stat icon="volume-x" label="NOISE" value={cafe.noiseLevel || "N/A"} />
       </View>
 
+      {/* TABS */}
       <View style={styles.tabs}>
         {[
           { name: 'Overview', icon: 'info' },
@@ -54,7 +90,7 @@ export default function CoffeeProfileScreen() {
               onPress={() => setActiveTab(tab.name as any)}
             >
               <Feather
-                name={tab.icon}
+                icon={tab.icon}
                 size={16}
                 color={active ? '#6F4E37' : '#A99C93'}
               />
@@ -66,10 +102,13 @@ export default function CoffeeProfileScreen() {
         })}
       </View>
 
+      {/* CONTENT */}
       <View style={styles.content}>
-        {activeTab === 'Overview' && <OverviewTab />}
-        {activeTab === 'Reviews' && <ReviewsTab />}
-        {activeTab === 'Vibes' && <VibesTab />}
+        {activeTab === 'Overview' && <OverviewTab cafe={cafe} />}
+        {activeTab === 'Reviews' && (
+          <ReviewsTab reviews={cafe.reviews} />
+        )}
+        {activeTab === 'Vibes' && <VibesTab cafe={cafe} />}
       </View>
     </View>
   );
@@ -92,8 +131,6 @@ function Stat({
     </View>
   );
 }
-
-/* Styling */
 
 const styles = StyleSheet.create({
   container: {

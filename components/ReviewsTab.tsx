@@ -1,39 +1,35 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, FlatList, Pressable } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  FlatList,
+  Pressable,
+} from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
-const sampleReviews = [
-  {
-    id: '1',
-    userId: 'user-1',
-    user: 'John Doe',
-    rating: 4,
-    comment: 'Amazing coffee and cozy atmosphere! Not too loud either.',
-    avatar: 'https://randomuser.me/api/portraits/men/68.jpg',
-  },
-  {
-    id: '2',
-    userId: 'user-2',
-    user: 'Jane Smith',
-    rating: 5,
-    comment: 'Great place to work, love the outlet availability!',
-    avatar: 'https://randomuser.me/api/portraits/women/27.jpg',
-  },
-  {
-    id: '3',
-    userId: 'user-2',
-    user: 'Jane Smith',
-    rating: 4,
-    comment: 'Friendly staff and delicious pastries!',
-    avatar: 'https://randomuser.me/api/portraits/women/27.jpg',
-  },
-];
+type Review = {
+  id: string;
+  rating: number;
+  comment: string;
+  user: {
+    id: string;
+    name: string;
+    avatar?: string; // optional (since your DB doesn't have it yet)
+  };
+};
 
-export default function ReviewsTab() {
+export default function ReviewsTab({ reviews }: any){
   const router = useRouter();
-  const overallRating = 4.8;
-  const totalReviews = 526;
+  const overallRating =
+    reviews.length > 0
+      ? (
+          reviews.reduce((sum: number, r: Review) => sum + r.rating, 0) /
+          reviews.length
+        ).toFixed(1)
+      : '0.0';
 
   const renderStars = (rating: number) => {
     const stars = [];
@@ -51,18 +47,28 @@ export default function ReviewsTab() {
     return <View style={{ flexDirection: 'row' }}>{stars}</View>;
   };
 
-  const renderReview = ({ item }: any) => (
+  const renderReview = ({ item }: { item: Review }) => (
     <View style={styles.reviewCard}>
-      <Pressable onPress={() => router.push(`/user/${item.userId}`)}>
-        <Image source={{ uri: item.avatar }} style={styles.avatar} />
+      <Pressable onPress={() => router.push(`/user/${item.user.id}`)}>
+        <Image
+          source={{
+            uri:
+              item.user.avatar ||
+              'https://randomuser.me/api/portraits/men/1.jpg',
+          }}
+          style={styles.avatar}
+        />
       </Pressable>
+
       <View style={{ flex: 1 }}>
         <View style={styles.reviewHeader}>
-          <Pressable onPress={() => router.push(`/user/${item.userId}`)}>
-            <Text style={styles.userName}>{item.user}</Text>
+          <Pressable onPress={() => router.push(`/user/${item.user.id}`)}>
+            <Text style={styles.userName}>{item.user.name}</Text>
           </Pressable>
+
           {renderStars(item.rating)}
         </View>
+
         <Text style={styles.comment}>{item.comment}</Text>
       </View>
     </View>
@@ -70,12 +76,17 @@ export default function ReviewsTab() {
 
   return (
     <View style={styles.container}>
+      {/* OVERALL RATING */}
       <View style={styles.overallCard}>
-      {renderStars(Math.round(overallRating))}
-      <Text style={styles.totalReviews}>({totalReviews} reviews)</Text>
-    </View>
+        {renderStars(Math.round(Number(overallRating)))}
+        <Text style={styles.totalReviews}>
+          ({reviews.length} reviews)
+        </Text>
+      </View>
+
+      {/* REVIEWS LIST */}
       <FlatList
-        data={sampleReviews}
+        data={reviews}
         keyExtractor={(item) => item.id}
         renderItem={renderReview}
         contentContainerStyle={{ paddingTop: 12 }}
@@ -96,13 +107,7 @@ const styles = StyleSheet.create({
     elevation: 2,
     alignSelf: 'center',
   },
-  overallRating: {
-    fontSize: 20,
-    fontFamily: 'Afacad',
-    fontWeight: 'bold',
-    marginBottom: 6,
-    color: '#434342',
-  },
+
   totalReviews: {
     fontSize: 12,
     color: '#616161',
@@ -118,23 +123,27 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     elevation: 2,
   },
+
   avatar: {
     width: 40,
     height: 40,
     borderRadius: 20,
     marginRight: 12,
   },
+
   reviewHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+
   userName: {
     fontSize: 14,
     fontFamily: 'Afacad',
     fontWeight: 'bold',
     color: '#434342',
   },
+
   comment: {
     marginTop: 4,
     fontSize: 12,

@@ -1,52 +1,80 @@
-# Welcome to your Expo app 👋
+# ☕ Cafe Finder App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A mobile app for discovering and reviewing local coffee shops. Built with Expo (React Native), Node.js, and Prisma.
 
-## Get started
+## Tech Stack
 
-1. Install dependencies
+- **Frontend:** Expo / React Native with file-based routing via Expo Router
+- **Backend:** Node.js + Express
+- **Database:** SQLite via Prisma ORM
 
-   ```bash
-   npm install
-   ```
+## Project Structure
+app/
+(tabs)/
+browse.tsx        # Search & filter cafes
+profile.tsx       # Current user's profile
+edit-profile.tsx  # Edit profile form
+cafe/
+[slug].tsx        # Individual cafe page (Overview, Reviews, Vibes)
+user/
+[id].tsx          # Public user profile page
+components/
+OverviewTab.tsx
+ReviewsTab.tsx
+VibesTab.tsx
+UserProfile.tsx
+ProfileHeader.tsx
+ProfileStats.tsx
+UserReviewsSection.tsx
+EditProfileForm.tsx
+hooks/
+use-user.ts         # Fetches user from API
+use-current-user.ts # Returns the logged-in user's ID
+prisma/
+schema.prisma       # DB schema
+index.js              # Express API server
+seed.js               # Seeds the database with sample data
 
-2. Start the app
+## Get Started
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### 1. Install dependencies
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 2. Set up the database
 
-## Learn more
+```bash
+npx prisma migrate dev
+node seed.js
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+### 3. Start the backend
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+node index.js
+```
 
-## Join the community
+### 4. Start the app
 
-Join our community of developers creating universal apps.
+```bash
+npx expo start
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## API Routes
 
+| Method | Route | Description |
+|--------|-------|-------------|
+| GET | `/api/cafes` | Get all cafes |
+| GET | `/api/cafes/:slug` | Get a single cafe with reviews |
+| GET | `/api/users` | Get all users |
+| GET | `/api/users/:id` | Get a single user with reviews |
+| PUT | `/api/users/:id` | Update user profile |
 
+## Database Schema
+
+- **User** — name, email, bio, location, avatar, activeSince
+- **Cafe** — name, slug, description, address, openHours, wifiSpeed, powerOutlets, noiseLevel, distance
+- **Review** — rating, comment, linked to User and Cafe
+- **Tag, Amenity, Vibe, CafeImage** — linked to Cafe

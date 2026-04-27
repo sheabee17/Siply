@@ -25,7 +25,7 @@ export default function CoffeeProfileScreen() {
   useEffect(() => {
     if (!slug) return;
 
-    fetch(`http://10.100.147.120:3001/api/cafes/${slug}`)
+    fetch(`http://localhost:3001/api/cafes/${slug}`)
       .then((res) => res.json())
       .then(setCafe)
       .catch(console.error);

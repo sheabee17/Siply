@@ -9,6 +9,8 @@ A mobile app for discovering and reviewing local coffee shops. Built with Expo (
 - **Database:** SQLite via Prisma ORM
 
 ## Project Structure
+
+```bash
 app/
 ├── (tabs)/
 │   ├── browse.tsx        # Search & filter cafes
@@ -41,6 +43,7 @@ prisma/
 
 index.js                  # Express API server
 seed.js                   # Seeds the database with sample data
+```
 
 ## Get Started
 

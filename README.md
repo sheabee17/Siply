@@ -1,4 +1,4 @@
-# ☕ Cafe Finder App
+# ☕ Siply: A Cafe Finder App
 
 A mobile app for discovering and reviewing local coffee shops. Built with Expo (React Native), Node.js, and Prisma.
 

@@ -61,7 +61,7 @@ export default function UserProfile({ userId }: UserProfileProps) {
         fullName={user.name}
         bio={user.bio ?? ''}
         location={user.location ?? ''}
-        activeSince={''}
+        activeSince={user.activeSince ?? ''}
         avatar={user.avatar ?? 'https://randomuser.me/api/portraits/lego/1.jpg'}
         onPressSettings={isOwnProfile ? () => router.push('/modal') : undefined}
       />
@@ -80,7 +80,7 @@ export default function UserProfile({ userId }: UserProfileProps) {
             </Pressable>
             <Pressable
               style={styles.primaryButton}
-              onPress={() => router.push('/edit-profile')}
+              onPress={() => router.push('/(tabs)/edit-profile')}
             >
               <Text style={styles.primaryButtonText}>Edit Profile</Text>
             </Pressable>

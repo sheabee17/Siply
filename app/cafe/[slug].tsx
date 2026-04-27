@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Feather, FontAwesome } from '@expo/vector-icons';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, Stack } from 'expo-router';
 
 import OverviewTab from '../../components/OverviewTab';
 import ReviewsTab from '../../components/ReviewsTab';
@@ -34,6 +34,7 @@ export default function CoffeeProfileScreen() {
   if (!cafe) {
     return (
       <View style={styles.container}>
+        <Stack.Screen options={{ headerShown: false }} />
         <Text style={{ padding: 20 }}>Loading...</Text>
       </View>
     );
@@ -41,6 +42,8 @@ export default function CoffeeProfileScreen() {
 
   return (
     <View style={styles.container}>
+      <Stack.Screen options={{ headerShown: false }} />
+
       {/* HEADER */}
       <View style={styles.header}>
         <Image

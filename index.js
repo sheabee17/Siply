@@ -46,7 +46,14 @@ app.get("/api/cafes", async (req, res) => {
     },
   });
 
-  res.json(cafes);
+  const cafesWithRating = cafes.map(cafe => ({
+    ...cafe,
+    rating: cafe.reviews.length > 0
+      ? cafe.reviews.reduce((sum, r) => sum + r.rating, 0) / cafe.reviews.length
+      : 0,
+  }));
+
+  res.json(cafesWithRating);
 });
 
 /* SINGLE CAFE */
@@ -59,14 +66,18 @@ app.get("/api/cafes/:slug", async (req, res) => {
       vibes: true,
       images: true,
       reviews: {
-        include: {
-          user: true,
-        },
+        include: { user: true },
       },
     },
   });
 
-  res.json(cafe);
+  if (!cafe) return res.status(404).json({ error: "Cafe not found" });
+
+  const rating = cafe.reviews.length > 0
+    ? cafe.reviews.reduce((sum, r) => sum + r.rating, 0) / cafe.reviews.length
+    : 0;
+
+  res.json({ ...cafe, rating });
 });
 
 const PORT = 3001;

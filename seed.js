@@ -15,20 +15,38 @@ async function main() {
   console.log("Cleared DB");
 
   // USERS
-  const user1 = await prisma.user.create({
-    data: { name: "John", email: "john@test.com", age: 22, password: "123" },
-  });
+const user1 = await prisma.user.create({
+  data: {
+    name: "John Doe",
+    email: "john@test.com",
+    age: 22,
+    password: "123",
+    bio: "Coffee lover & digital nomad. Always searching for the perfect cup.",
+    location: "San Antonio, TX",
+    avatar: "https://randomuser.me/api/portraits/men/68.jpg",
+    activeSince: "2024",
+  },
+});
 
-  const user2 = await prisma.user.create({
-    data: { name: "Jane", email: "jane@test.com", age: 25, password: "123" },
-  });
+const user2 = await prisma.user.create({
+  data: {
+    name: "Jane Smith",
+    email: "jane@test.com",
+    age: 25,
+    password: "123",
+    bio: "Barista by day, latte art enthusiast by night. ☕",
+    location: "Austin, TX",
+    avatar: "https://randomuser.me/api/portraits/women/27.jpg",
+    activeSince: "2023",
+  },
+});
 
   // CAFES
   const cafe = await prisma.cafe.create({
     data: {
       name: "The Daily Grind",
       slug: slugify("The Daily Grind"),
-      rating: 4.8,
+      distance: 0.3,
       description: "A cozy, modern neighborhood coffee shop with warm lighting, natural wood accents, and plenty of greenery. The atmosphere is calm and welcoming, with soft background music. Free high-speed Wi-Fi (around 120-170 Mbps) is reliable even during busy hours.",
       address: "123 Brew St, Downtown",
       crossStreet: "Broadway & 4th",
@@ -83,7 +101,7 @@ async function main() {
     data: {
       name: "Brew and Co",
       slug: slugify("Brew and Co"),
-      rating: 4.5,
+      distance: 0.8,
       description: "A laid-back, sun-soaked cafe with terracotta tones, lush patio seating, and the kind of unhurried energy that makes an hour feel like five minutes. Local art lines the walls, the music skews indie and eclectic, and the menu leans into bold, locally sourced flavors. Wi-Fi is available and reliable, but most regulars come here to unplug and soak in the atmosphere.",
       address: "456 Bean Ave, Midtown",
       crossStreet: "Main & 5th",

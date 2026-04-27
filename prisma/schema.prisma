@@ -17,25 +17,23 @@ model User {
   bio       String?
   location  String?
   avatar    String?
-
+  activeSince String?
   reviews   Review[]
 }
+
 /* CAFES */
 model Cafe {
   id          String   @id @default(uuid())
   name        String
   slug        String   @unique
-  rating      Float
   description String
-
   address     String?
   crossStreet String?
   openHours   String?
-
+  distance    Float?
   wifiSpeed   String?
   powerOutlets String?
   noiseLevel  String?
-
   reviews     Review[]
   tags        Tag[]
   amenities   Amenity[]
@@ -50,10 +48,8 @@ model Review {
   id      String @id @default(uuid())
   rating  Int
   comment String
-
   userId  String
   cafeId  String
-
   user    User @relation(fields: [userId], references: [id])
   cafe    Cafe @relation(fields: [cafeId], references: [id])
 }
@@ -62,7 +58,6 @@ model Review {
 model Tag {
   id     String @id @default(uuid())
   label  String
-
   cafeId String
   cafe   Cafe @relation(fields: [cafeId], references: [id])
 }
@@ -71,7 +66,6 @@ model Tag {
 model Amenity {
   id     String @id @default(uuid())
   label  String
-
   cafeId String
   cafe   Cafe @relation(fields: [cafeId], references: [id])
 }
@@ -81,7 +75,6 @@ model Vibe {
   id     String @id @default(uuid())
   label  String
   icon   String @default("local-cafe")
-
   cafeId String
   cafe   Cafe @relation(fields: [cafeId], references: [id])
 }
@@ -90,7 +83,6 @@ model Vibe {
 model CafeImage {
   id     String @id @default(uuid())
   url    String
-
   cafeId String
   cafe   Cafe @relation(fields: [cafeId], references: [id])
 }

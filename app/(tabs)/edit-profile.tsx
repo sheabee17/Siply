@@ -13,8 +13,7 @@ export default function EditProfileScreen() {
   if (!user) return null;
 
   const initialValues = {
-    firstName: user.name,
-    lastName: '',
+    name: user.name,
     location: user.location ?? '',
     bio: user.bio ?? '',
     email: user.email,
@@ -33,7 +32,7 @@ export default function EditProfileScreen() {
           if (!currentUserId) return;
           try {
             await updateUser(currentUserId, {
-              name: values.firstName,
+              name: values.name,
               bio: values.bio,
               location: values.location,
             });

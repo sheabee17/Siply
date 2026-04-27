@@ -1,3 +1,3 @@
-export function useCurrentUser(): { currentUserId: string | null } {
-  return { currentUserId: '467c2a6d-03d2-424e-ba04-8d79f42ffc9e' };
+export function useCurrentUser() {
+  return { currentUserId: '799ae617-a1e5-4b15-a5ee-da549631cb44' };
 }

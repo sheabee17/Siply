@@ -9,7 +9,16 @@ import { FontAwesome } from '@expo/vector-icons';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
-import type { UserReview } from '../data/mock-users';
+type UserReview = {
+  id: string;
+  cafeId: string;
+  cafeSlug: string;
+  cafeName: string;
+  cafeImage: string;
+  rating: number;
+  reviewText: string;
+  createdAt: string;
+};
 
 type UserReviewsSectionProps = {
   reviews: UserReview[];

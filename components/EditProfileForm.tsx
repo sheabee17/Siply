@@ -3,8 +3,7 @@ import { useState } from 'react';
 
 type EditProfileFormProps = {
   initialValues: {
-    firstName: string;
-    lastName: string;
+    name: string;
     location: string;
     bio: string;
     email: string;
@@ -13,8 +12,7 @@ type EditProfileFormProps = {
     avatar: string;
   };
   onSave?: (values: {
-    firstName: string;
-    lastName: string;
+    name: string;
     location: string;
     bio: string;
     email: string;
@@ -46,23 +44,13 @@ export default function EditProfileForm({
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.avatarWrapper}>
         <Image source={{ uri: form.avatar }} style={styles.avatar} />
-        <Pressable style={styles.editAvatarButton}>
-          <Text style={styles.editAvatarText}>✎</Text>
-        </Pressable>
       </View>
 
-      <FieldLabel label="First Name" />
+      <FieldLabel label="Name" />
       <TextInput
         style={styles.input}
-        value={form.firstName}
-        onChangeText={(text) => updateField('firstName', text)}
-      />
-
-      <FieldLabel label="Last Name" />
-      <TextInput
-        style={styles.input}
-        value={form.lastName}
-        onChangeText={(text) => updateField('lastName', text)}
+        value={form.name}
+        onChangeText={(text) => updateField('name', text)}
       />
 
       <FieldLabel label="Location" />

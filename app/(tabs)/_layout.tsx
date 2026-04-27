@@ -81,14 +81,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="list"
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon name="bookmark" label="My List" focused={focused} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="profile"
         options={{
           tabBarIcon: ({ focused }) => (
@@ -100,6 +92,11 @@ export default function TabLayout() {
         name="edit-profile"
         options={{ href: null }}
       />
+      <Tabs.Screen
+        name="list"
+        options={{ href: null }}
+      />
     </Tabs>
+
   );
 }
